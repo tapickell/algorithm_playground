@@ -54,6 +54,7 @@ var unsortedArr = [
   181, 485, 495, 81, 169, 294, 79, 400, 92, 104, 249
 ];
 
+  var bubble_count = 0;
 function bubbleSort(arr) {
   var sorted = false;
   while (!sorted) {
@@ -66,11 +67,60 @@ function bubbleSort(arr) {
         arr[i + 1] = temp;
       }
     }
+    bubble_count++
   }
   return arr;
 }
 
-function bubbleSortR(list, sorted = false) {
+bubbleSort(unsortedArr.slice(0))
+console.log("While loop Bubble Sort", bubble_count)
+
+function bubbleItLeft(arr) {
+  let wrong = 0
+  let list = arr.reverse()
+  for (var i = 0; i < arr.length; i++) {
+    if (list[i] < list[i + 1]) {
+      wrong++
+      var temp = list[i];
+      list[i] = list[i + 1];
+      list[i + 1] = temp;
+    }
+  }
+  // console.log("Left Wrong", wrong)
+  return {list: list.reverse(), wrong: wrong}
+}
+
+function bubbleItRight(arr) {
+  let wrong = 0
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i] > arr[i + 1]) {
+      wrong++
+      var temp = arr[i];
+      arr[i] = arr[i + 1];
+      arr[i + 1] = temp;
+    }
+  }
+  // console.log("Right Wrong", wrong)
+  return {list: arr, wrong: wrong}
+}
+
+let experimental_count = 0
+function experimentalSearch(list, sorted, count = 0) {
+  if (sorted) return list
+  let right = bubbleItRight(list.slice(0))
+  let left = bubbleItLeft(right.list.slice(0))
+  if ((right.wrong + left.wrong) === 0) sorted = true
+  experimental_count++
+  // console.log("experimental list", sorted, right.wrong, left.wrong, count)
+  return experimentalSearch(left.list, sorted, count)
+}
+
+let experimentalList = experimentalSearch(unsortedArr.slice(0), false)
+console.log("Experiemental count", experimental_count)
+// console.log(experimentalList, "EXPERIMENTAL FINISHED LIST")
+
+let recursive_count = 0
+function bubbleSortR(list, sorted = false, count = 0) {
   if (sorted) return list
   let wrong = 0
   for (let index = 0; index < list.length; index++) {
@@ -83,8 +133,11 @@ function bubbleSortR(list, sorted = false) {
     }
   }
   if (wrong === 0) sorted = true
-  return bubbleSortR(list, sorted)
+  recursive_count += 1
+  // console.log("recursive list", sorted, wrong, count)
+  return bubbleSortR(list, sorted, count)
 }
 
-let sortedBetter = bubbleSortR(unsortedArr)
-console.log(sortedBetter)
+let sortedBetter = bubbleSortR(unsortedArr.slice(0))
+console.log("Recursive count", recursive_count)
+// console.log(sortedBetter, "sorted recursive")
